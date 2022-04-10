@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "ffmapserver.fullname" . }}-vmserver
+  labels:
+    helm.sh/chart: {{ include "ffmapserver.chart" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-vmserver
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: 1
+  serviceName: {{ include "ffmapserver.fullname" . }}-vmserver
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-vmserver
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-vmserver
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: victoriametrics
+          image: "{{ .Values.victoriametrics.image.repository }}:{{ .Values.victoriametrics.image.tag }}"
+          imagePullPolicy: {{ .Values.victoriametrics.image.pullPolicy }}
+          args:
+           - --retentionPeriod={{ required "victoriametrics.retentionInMonths" .Values.victoriametrics.retentionInMonths }}
+           - --selfScrapeInterval=30s
+          ports:
+            - name: http
+              containerPort: 8428
+          volumeMounts:
+            - name: server-volume
+              mountPath: /victoria-metrics-data
+          startupProbe:
+            tcpSocket:
+              port: http
+            failureThreshold: 30
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /health
+              port: 8428
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: server-volume
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: "{{ .Values.victoriametrics.persistentVolume.size }}"
+      {{- if .Values.victoriametrics.persistentVolume.storageClass }}
+      {{- if (eq "-" .Values.victoriametrics.persistentVolume.storageClass) }}
+        storageClassName: ""
+      {{- else }}
+        storageClassName: "{{ .Values.victoriametrics.persistentVolume.storageClass }}"
+      {{- end }}
+      {{- end }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ffmapserver.fullname" . }}-vmserver
+  labels:
+    helm.sh/chart: {{ include "ffmapserver.chart" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-vmserver
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  ports:
+  - port: 8428
+    name: http
+  selector:
+      app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-vmserver
+      app.kubernetes.io/instance: {{ .Release.Name }}

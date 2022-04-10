@@ -1,0 +1,41 @@
+# Ansible generated
+# load with iptables-restore --noflush < /etc/iptables/rules.v4
+
+*nat
+:PREROUTING ACCEPT
+:INPUT ACCEPT
+:OUTPUT ACCEPT
+:POSTROUTING ACCEPT
+
+# Masquerading all outgoing routet traffic
+-A POSTROUTING -o "{{ ansible_default_ipv4.interface }}" -j MASQUERADE
+COMMIT
+
+*filter
+:INPUT DROP
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+
+# Allow traffic of existing connections
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# Allow all traffic from localhost
+-A INPUT -i lo -j ACCEPT
+# Allow all traffic on internal network
+-A INPUT -s 10.0.0.0/8 -d 10.0.0.0/8 -j ACCEPT
+-A INPUT -s 172.16.0.0/16 -d 172.16.0.0/16 -j ACCEPT
+-A INPUT -s 192.168.0.0/16 -d 192.168.0.0/16 -j ACCEPT
+# Allow ICMP
+-A INPUT -p icmp -j ACCEPT
+# Allow TCP ping (Echo)
+-A INPUT -p tcp --dport 7 -j ACCEPT
+
+# Allow SSH
+-A INPUT -p tcp --dport 22 -j ACCEPT
+# Allow HTTP
+-A INPUT -p tcp --dport 80 -j ACCEPT
+# Allow HTTPS
+-A INPUT -p tcp --dport 443 -j ACCEPT
+# Allow kubernetes apiserver
+-A INPUT -p tcp --dport 6443 -j ACCEPT
+
+COMMIT

@@ -1,0 +1,13 @@
+---
+
+cert-manager:
+  installCRDs: true
+
+  ingressShim:
+    defaultIssuerName: "letsencrypt"
+    defaultIssuerKind: "ClusterIssuer"
+
+  prometheus:
+    enabled: false
+    servicemonitor:
+      enabled: false

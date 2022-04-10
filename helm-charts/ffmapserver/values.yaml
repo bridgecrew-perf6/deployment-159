@@ -1,0 +1,72 @@
+# Default values for ffmapserver.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+#domain: karte.mydomain.com
+
+fastd:
+  image:
+    repository: ghcr.io/freifunkstuff/fastd-client
+    tag: master
+    pullPolicy: Always
+#  mtu: 1200
+#  peers:
+#  - name: peer1
+#    remote: "peer1.somwhere.freifunk.net" port 1006
+#    key: 1234567890abcdefghij
+#  logLevel: info
+#  ipv6Prefix: "fdef:ffc0:7030::/64"
+
+yanic:
+  image:
+    repository: ghcr.io/freifunkstuff/yanic
+    tag: master
+    pullPolicy: Always
+
+collector:
+  image:
+    repository: ghcr.io/freifunkstuff/meshviewer-collector
+    tag: master
+    pullPolicy: Always
+
+meshviewer:
+  image:
+    repository: ghcr.io/freifunkstuff/meshviewer-ffle
+    tag: master
+    pullPolicy: Always
+
+renderer:
+  image:
+    repository: lomik/prometheus-png
+    tag: v0.5.0
+    pullPolicy: IfNotPresent
+
+# Do not use grafana >=8.3.0 unless https://github.com/grafana/grafana/issues/42615 is fixed!
+grafana:
+  image:
+    repository: grafana/grafana
+    tag: 8.2.7
+    pullPolicy: IfNotPresent
+  persistentVolume:
+    size: 1Gi
+    # storageClass: default
+
+victoriametrics:
+  image:
+    repository: victoriametrics/victoria-metrics
+    tag: v1.72.0
+    pullPolicy: IfNotPresent
+  retentionInMonths: 36
+  persistentVolume:
+    size: 20Gi
+    # storageClass: default
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

@@ -1,0 +1,16 @@
+---
+
+- hosts: hosts
+  roles:
+    - name: base
+      tags: base
+
+- hosts: docker
+  roles:
+    - name: docker
+      tags: docker
+
+- hosts: k3s
+  roles:
+    - name: k3s
+      tags: k3s

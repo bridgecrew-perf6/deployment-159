@@ -1,0 +1,64 @@
+---
+
+- apt:
+    name: docker.io, docker-compose, iptables, arptables, ebtables, iptables-persistent
+    update_cache: yes
+
+- name: Load br_netfilter module
+  modprobe:
+    name: br_netfilter
+
+- name: Add autoload for br_netfilter module
+  lineinfile:
+    name: /etc/modules
+    line: br_netfilter
+
+- name: switch to iptables
+  alternatives:
+    name: "{{ item }}"
+    path: "/usr/sbin/{{ item }}-legacy"
+  with_items:
+    - iptables
+    - ip6tables
+    - arptables
+    - ebtables
+  notify:
+    - Reboot
+
+- name: Flush NFT ruleset if pressent
+  command: /usr/sbin/nft flush ruleset removes=/usr/sbin/nft
+
+- apt:
+    name: nftables
+    state: absent
+
+- name: Create iptables v4 rules
+  template: 
+    src: "rules.v4"
+    dest: /etc/iptables/rules.v4
+  notify: 
+    - Refresh iptables v4
+
+- name: Create iptables v6 rules
+  template: 
+    src: "rules.v6"
+    dest: /etc/iptables/rules.v6
+  notify: 
+    - Refresh iptables v6
+
+- name: Configure docker
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "iptables": {{ 'true' if docker_iptables|default(false) else 'false' }},
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "25m",
+          "max-file": "4"
+        }
+      }
+  notify: Restart docker
+
+- name: Flush handlers
+  meta: flush_handlers

@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ffmapserver.fullname" . }}-meshviewer
+  labels:
+    helm.sh/chart: {{ include "ffmapserver.chart" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-meshviewer
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-meshviewer
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-meshviewer
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: meshviewer
+          image: "{{ .Values.meshviewer.image.repository }}:{{ .Values.meshviewer.image.tag }}"
+          imagePullPolicy: {{ .Values.meshviewer.image.pullPolicy }}
+          volumeMounts:
+            - name: meshviewer-data
+              mountPath: /usr/share/nginx/html/data
+              subPath: meshviewer
+          ports:
+            - name: http
+              containerPort: 80
+          startupProbe:
+            tcpSocket:
+              port: http
+            failureThreshold: 30
+            periodSeconds: 15
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              scheme: HTTP
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+      - name: meshviewer-data
+        persistentVolumeClaim:
+          claimName: {{ include "ffmapserver.fullname" . }}-meshviewer
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ffmapserver.fullname" . }}-meshviewer
+  labels:
+    helm.sh/chart: {{ include "ffmapserver.chart" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-meshviewer
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+      app.kubernetes.io/name: {{ include "ffmapserver.name" . }}-meshviewer
+      app.kubernetes.io/instance: {{ .Release.Name }}
+
+---
+
+{{- if .Values.domain }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "ffmapserver.fullname" . }}-meshviewer
+  annotations:
+    kubernetes.io/tls-acme: "true"
+spec:
+  rules:
+    - host: {{ .Values.domain }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: {{ include "ffmapserver.fullname" . }}-meshviewer
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+      - {{ .Values.domain }}
+      secretName: {{ include "ffmapserver.fullname" . }}-tls
+{{- end }}

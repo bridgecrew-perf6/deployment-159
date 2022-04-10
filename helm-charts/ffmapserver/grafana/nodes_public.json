@@ -1,0 +1,846 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "iteration": 1638201459202,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 15,
+      "interval": null,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Zur Karte",
+          "url": "../#!/de/map/$node_id"
+        }
+      ],
+      "maxDataPoints": 1,
+      "options": {
+        "showHeader": true
+      },
+      "pluginVersion": "8.2.3",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "max by (nodeid,hostname,firmware_base,firmware_release,model,owner,autoupdater) (node_time.up{nodeid=\"$node_id\"}[1y])",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Knoteninformationen",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Value": false
+            },
+            "indexByName": {
+              "Time": 5,
+              "Value": 7,
+              "autoupdater": 6,
+              "firmware_base": 3,
+              "firmware_release": 4,
+              "hostname": 1,
+              "model": 2,
+              "nodeid": 0
+            },
+            "renameByName": {
+              "Value": "Uptime",
+              "autoupdater": "Auto-Updater",
+              "firmware_base": "Firmware",
+              "firmware_release": "Version",
+              "hostname": "Hostname",
+              "model": "Modell",
+              "nodeid": "    Node-ID",
+              "owner": "Kontakt"
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": 1800000,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 0,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "binBps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 3
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "max by (nodeid) (irate(node_traffic.forward.bytes{nodeid=\"$node_id\"})[2m])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Traffic (forward)",
+          "refId": "Aa"
+        },
+        {
+          "exemplar": true,
+          "expr": "max by (nodeid) (irate(node_traffic.rx.bytes{nodeid=\"$node_id\"})[2m])",
+          "interval": "",
+          "legendFormat": "Traffic (rx)",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "max by (nodeid) (irate(node_traffic.tx.bytes{nodeid=\"$node_id\"})[2m])",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "Traffic (tx)",
+          "refId": "C"
+        }
+      ],
+      "title": "Traffic",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 5,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": 1800000,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 0,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 3
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "max by (nodeid)(max_over_time(node_clients.total{nodeid=\"$node_id\"}[3m]))",
+          "interval": "",
+          "legendFormat": "clients",
+          "refId": "A"
+        }
+      ],
+      "title": "Clients",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 11
+      },
+      "id": 11,
+      "options": {
+        "frameIndex": 0,
+        "showHeader": true
+      },
+      "pluginVersion": "8.2.3",
+      "repeat": null,
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.forward.bytes{nodeid=\"$node_id\"}[1y])),\"interval\",\"1y\",\"\",\"\"),\"traffic\",\"forward\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.rx.bytes{nodeid=\"$node_id\"}[1y])),\"interval\",\"1y\",\"\",\"\"),\"traffic\",\"rx\",\"\",\"\")",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "B"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.tx.bytes{nodeid=\"$node_id\"}[1y])),\"interval\",\"1y\",\"\",\"\"),\"traffic\",\"tx\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "C"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.forward.bytes{nodeid=\"$node_id\"}[30d])),\"interval\",\"30d\",\"\",\"\"),\"traffic\",\"forward\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "D"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.rx.bytes{nodeid=\"$node_id\"}[30d])),\"interval\",\"30d\",\"\",\"\"),\"traffic\",\"rx\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "E"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.tx.bytes{nodeid=\"$node_id\"}[30d])),\"interval\",\"30d\",\"\",\"\"),\"traffic\",\"tx\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "F"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.forward.bytes{nodeid=\"$node_id\"}[24h])),\"interval\",\"24h\",\"\",\"\"),\"traffic\",\"forward\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "G"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.rx.bytes{nodeid=\"$node_id\"}[24h])),\"interval\",\"24h\",\"\",\"\"),\"traffic\",\"rx\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "H"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.tx.bytes{nodeid=\"$node_id\"}[24h])),\"interval\",\"24h\",\"\",\"\"),\"traffic\",\"tx\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "I"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.forward.bytes{nodeid=\"$node_id\"}[1h])),\"interval\",\"1h\",\"\",\"\"),\"traffic\",\"forward\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "J"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.rx.bytes{nodeid=\"$node_id\"}[1h])),\"interval\",\"1h\",\"\",\"\"),\"traffic\",\"rx\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "K"
+        },
+        {
+          "exemplar": true,
+          "expr": "label_replace(label_replace(max by (nodeid) (increase(node_traffic.tx.bytes{nodeid=\"$node_id\"}[1h])),\"interval\",\"1h\",\"\",\"\"),\"traffic\",\"tx\",\"\",\"\")",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "L"
+        }
+      ],
+      "title": "Traffic",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "valueLabel": "traffic"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "nodeid": true
+            },
+            "indexByName": {
+              "Time": 0,
+              "forward": 3,
+              "interval": 2,
+              "nodeid": 1,
+              "rx": 4,
+              "tx": 5
+            },
+            "renameByName": {
+              "interval": " ",
+              "traffic": " "
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 2,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "always",
+            "spanNulls": 600000,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 19,
+        "w": 12,
+        "x": 12,
+        "y": 11
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "avg by (target.id,target.hostname) (link_tq{source.id=\"$node_id\"})",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "to {{target.id}} {{target.hostname}}",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "avg by (source.id,source.hostname) (link_tq{target.id=\"$node_id\"})",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "from {{source.id}} {{source.hostname}}",
+          "refId": "B"
+        }
+      ],
+      "title": "Links zu anderen Knoten",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "orange",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": 3600000,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "max by (nodeid) (node_load{nodeid=\"$node_id\"})",
+          "interval": "",
+          "intervalFactor": 3,
+          "legendFormat": "load",
+          "refId": "A"
+        }
+      ],
+      "title": "Load",
+      "type": "timeseries"
+    },
+    {
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "orange",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": 3600000,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "deckbytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 23
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "mean",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "max by (nodeid) (node_memory.total{nodeid=\"$node_id\"})",
+          "interval": "",
+          "intervalFactor": 10,
+          "legendFormat": "total",
+          "refId": "A"
+        },
+        {
+          "exemplar": true,
+          "expr": "max by (nodeid) (node_memory.total{nodeid=\"$node_id\"}-node_memory.available{nodeid=\"$node_id\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "used",
+          "refId": "B"
+        }
+      ],
+      "title": "RAM",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 31,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "datasource": null,
+        "definition": "query_result(label_join( max by (hostname,nodeid) (node_clients.total[1y]) , \"result\", \" - \", \"nodeid\", \"hostname\"))",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "node_id",
+        "options": [],
+        "query": {
+          "query": "query_result(label_join( max by (hostname,nodeid) (node_clients.total[1y]) , \"result\", \" - \", \"nodeid\", \"hostname\"))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/nodeid=\"(?<value>[^\"]+)|result=\"(?<text>[^\"]+)/g",
+        "skipUrlSync": false,
+        "sort": 5,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Node (public)",
+  "uid": "KoKOqJc7k",
+  "version": 28
+}

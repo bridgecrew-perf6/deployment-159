@@ -1,0 +1,18 @@
+# Ansible generated
+
+# load with ip6tables-restore --noflush < /etc/iptables/rules.v6
+*filter
+:INPUT DROP
+:FORWARD ACCEPT
+:OUTPUT ACCEPT
+
+# Cleanup
+-F INPUT
+# Allow traffic of existing connections
+-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# Allow all traffic from localhost
+-A INPUT -i lo -j ACCEPT
+# Allow ICMP
+-A INPUT -p icmpv6 -j ACCEPT
+
+COMMIT

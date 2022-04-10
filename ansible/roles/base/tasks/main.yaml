@@ -1,0 +1,36 @@
+---
+
+- name: hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: ssh-keys
+  copy:
+    dest: /root/.ssh/authorized_keys
+    content: |
+      # Michael Wyraz
+      ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQClbwINgHPWHH6xIag2QyEuRlzsPBAk/J4f4nPxkYENnRbH0Waa9HZDXaaZA4fgj8pc4XnObsoPVUD1KvqZ2F7N7v6QnVMgOeahJeO2r6v1r0TIL2H8XfykrN6xYkU4YADb3tTfbfwbs8R5UI//leOuV/IlScZYprdsrkUw2pf7k1ZbYpTyUg5yjr4u3fWVCSkD1hWUseoixlglp6LnwIRapCwu47BkjvGwyhWi8IRKtMuLHOtxlVzhAKnYnCPfdj7R6rzlnPs93hTfZGlhovUkHqtm4Cj+jWoQFxFl7loii4tNgn9p3wr/HJTbypDJ66Fjbgu2dEc7QiIdl+zb8f4YNpX/xr8xpdTChIWm/X/NWgLI1Mmiu+bPZ3uOys/QTPst4/5gtgZ3rdLv2PNVkVT2fPOo55XsD9ISdBnlbTvDVoTWFoIdhxIQQyrD+vGE9vSDXtqyfGygdsGmwcB/WNwN+nr/XF+4BwgSnvM42rxUw1mVsdDxC7VuIoxoL+LHDVs= mwyraz@notebook-2020
+
+- name: install pdns-recursor
+  apt:
+    name: pdns-recursor
+    update_cache: yes
+
+- name: enable pdns-recursor
+  service:
+    name: pdns-recursor
+    enabled: true
+    state: started
+
+- name: setup resolv.conf
+  copy:
+    dest: /etc/resolv.conf
+    content: |
+      nameserver 127.0.0.1
+      options edns0
+
+- name: disabled systemd-resolved
+  service:
+    name: systemd-resolved
+    enabled: false
+    state: stopped
