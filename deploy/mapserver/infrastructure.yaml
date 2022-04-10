@@ -40,3 +40,18 @@ charts:
             enabled: true
       defaultBackend:
         enabled: true
+
+  - name: backup
+    namespace: infrastructure
+    chart:
+      path: ../../helm-charts/backup
+    values:
+      resticRepositoryUrl: s3:https://s3.eu-central-003.backblazeb2.com/backup-ffle-mapserver
+      resticPassword: <SECRET>+GO41xBp02XLKv7q0N2WZfiAdwlOOmI5zLfAALfUl70ir1c2wlDBkE54e5Qu0jY4ozFdTkXkTQQ8NHX1YzUD51ad6L5U
+      s3Key: 003aade47394c0c0000000001
+      s3Secret: <SECRET>+GO41xBb0QOvHObToODPTruNYAcLE0QhouzCSbXmkpkJ2kca
+      nodeSelectorRequired: false
+      volumes:
+        - name: k3s
+          hostPath: /data/k3s
+      

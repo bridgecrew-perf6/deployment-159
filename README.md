@@ -115,6 +115,10 @@ Installiert den Cert-Manager, welcher für die Vergabe und Erneuerung von SSL-Ze
 
 Ingress-Controller zur Bereitstellung von Diensten via HTTP(s).
 
+### Backup
+
+Restic-Backup aller Daten auf einen B2 (Backblaze) Account.
+
 ## Mapserver-Stack
 
 ### Mapserver
